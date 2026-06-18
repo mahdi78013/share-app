@@ -1,0 +1,66 @@
+# Codemagic CI/CD configuration for Android App
+# For more info: https://docs.codemagic.io/yaml-basic-configuration/yaml-integration/
+
+workflows:
+  android-build:
+    name: Android Release Build Workflow
+    max_build_duration: 60
+    instance_type: mac_mini_m1
+    environment:
+      java: 17
+      groups:
+        - keystore_credentials # Group for keystore secrets configured in Codemagic UI
+      vars:
+        # Predefined fallback key parameters matching your JKS properties
+        KEY_ALIAS: "myapps"
+    triggering:
+      events:
+        - push
+        - pull_request
+      branch_patterns:
+        - pattern: '*'
+          include: true
+    scripts:
+      - name: Set up local.properties
+        script: |
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
+      - name: Prepare Gradlew executable
+        script: |
+          chmod +x gradlew
+      - name: Set up keystore file
+        script: |
+          # If keystore is passed secure as base64 string via Codemagic environment variables
+          if [ ! -z "$CM_KEYSTORE" ]; then
+            echo "Decoding Keystore from Codemagic environment..."
+            echo "$CM_KEYSTORE" | base64 --decode > $FCI_BUILD_DIR/myapps.jks
+          elif [ -f "myapps.jks" ]; then
+            echo "Found committed/uploaded myapps.jks in the working directory."
+            cp myapps.jks $FCI_BUILD_DIR/myapps.jks
+          else
+            echo "WARNING: No keystore file found. Build will fall back to unsigned release."
+          fi
+      - name: Build Android App (Release)
+        script: |
+          # Check if keystore is ready to sign properties
+          if [ -f "$FCI_BUILD_DIR/myapps.jks" ] && [ ! -z "$CM_KEYSTORE_PASSWORD" ]; then
+            echo "Building signed Release APK and App Bundle..."
+            ./gradlew bundleRelease assembleRelease \
+              -Pandroid.injected.signing.store.file=$FCI_BUILD_DIR/myapps.jks \
+              -Pandroid.injected.signing.store.password="$CM_KEYSTORE_PASSWORD" \
+              -Pandroid.injected.signing.key.alias="$KEY_ALIAS" \
+              -Pandroid.injected.signing.key.password="${CM_KEY_PASSWORD:-$CM_KEYSTORE_PASSWORD}"
+          else
+            echo "Building unsigned Release App..."
+            ./gradlew bundleRelease assembleRelease
+          fi
+    artifacts:
+      - app/build/outputs/apk/release/*.apk
+      - app/build/outputs/bundle/release/*.aab
+    publishing:
+      email:
+        recipients:
+          - cmd1378@gmail.com
+        notify:
+          success: true
+          failure: true
+

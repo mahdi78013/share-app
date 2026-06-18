@@ -1,0 +1,6 @@
+{
+  "name": "Share App",
+  "description": "A premium, ultra-fast Android application with a gorgeous glassmorphism corporate UI for extracting and sharing installed apps.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
