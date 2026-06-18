@@ -17,6 +17,6 @@ class ExampleInstrumentedTest {
   fun useAppContext() {
     // Context of the app under test.
     val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-    assertEquals("com.aistudio.glassshare.wkpvz", appContext.packageName)
+    assertEquals("com.d_Flor.package", appContext.packageName)
   }
 }

@@ -32,7 +32,7 @@
         <!-- Secure file provider definition mapping cached apks for native sharing -->
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.aistudio.glassshare.wkpvz.fileprovider"
+            android:authorities="com.d_Flor.package.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

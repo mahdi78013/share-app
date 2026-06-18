@@ -231,7 +231,7 @@ class ShareViewModel(
     // Invokes native intent engine
     private fun triggerSystemShare(context: Context, files: List<File>, titlePrefix: String) {
         try {
-            val authority = "com.aistudio.glassshare.wkpvz.fileprovider"
+            val authority = "com.d_Flor.package.fileprovider"
             val uris = files.map { FileProvider.getUriForFile(context, authority, it) }
 
             val intent = if (uris.size == 1) {
