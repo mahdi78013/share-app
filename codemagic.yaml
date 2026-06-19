@@ -13,9 +13,10 @@ workflows:
         script: |
           cd $CM_BUILD_DIR
           chmod +x gradlew
-          ./gradlew assembleRelease
+          ./gradlew bundleRelease
     artifacts:
       - app/build/outputs/**/*.apk
+      - app/build/outputs/**/*.aab
     publishing:
       email:
         recipients:
