@@ -2,10 +2,21 @@ workflows:
   android-debug:
     name: Android Debug Build
     max_build_duration: 60
-    environment:
-      java: 17
     scripts:
+      - name: Set Android SDK location
+        script: |
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/local.properties"
       - name: Build debug APK
-        script: ./gradlew assembleDebug
+        script: |
+          cd $CM_BUILD_DIR
+          chmod +x gradlew
+          ./gradlew assembleDebug
     artifacts:
-      - app/build/outputs/apk/debug/*.apk
+      - app/build/outputs/**/*.apk
+    publishing:
+      email:
+        recipients:
+          - cmd378@gmail.com
+        notify:
+          success: true
+          failure: true
